@@ -1,63 +1,112 @@
+<!DOCTYPE html>
 <html>
 <head>
-<title>Lab 2 for Web GIS</title>
-<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-<style type="text/css">
-html { height: 100% }
-body { height: 80%; margin: 0px; padding: 40px }
-#map_canvas { height: 50% }
-</style>
-<script type="text/javascript"
-src="https://maps.google.com/maps/api/js?sensor=false&key=AIzaSyB5U-lTv1hoJo_-
-ON8qVBXtEGXfZI80S7k">
-</script>
-<script type="text/javascript">
-function initialize()
-{
-var latlng = new google.maps.LatLng(35.306840, -80.73200);
-var myOptions = {
-zoom: 16,
-center: latlng,
-mapTypeId: google.maps.MapTypeId.HYBRID
-};
-var map = new google.maps.Map(document.getElementById("map_canvas"),
-myOptions);
-}
-</script>
+    <title>Lab 2 for Web GIS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 20px;
+            font-family: Comic Sans MS;
+        }
+
+        .map {
+            width: 100%;
+            height: 350px;
+            margin-bottom: 30px;
+        }
+    </style>
+
+    <script>
+        function initialize() {
+            const locations = [
+                { lat: 35.30745130246657, lng: -80.73022556088141 },
+                { lat: 35.19180484529694, lng: -80.84397068344236 },
+                { lat: 35.11724842806235, lng: -80.72135942889453 },
+                { lat: 35.35394212694568, lng: -80.93262105062811 },
+                { lat: 35.24712036759862, lng: -80.83243269268537 }
+            ];
+
+            const types = [
+                "hybrid",
+                "hybrid",
+                "hybrid",
+                "hybrid",
+                "hybrid"
+            ];
+
+            const zooms = [16, 12, 14, 16, 16];
+
+            for (let i = 0; i < 5; i++) {
+                const map = new google.maps.Map(
+                    document.getElementById("map" + (i + 1)),
+                    {
+                        center: locations[i],
+                        zoom: zooms[i],
+                        mapTypeId: types[i]
+                    }
+                );
+            }
+        }
+    </script>
+
+    <script
+        async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB5U-lTv1hoJo_-
+ON8qVBXtEGXfZI80S7k&callback=initialize">
+    </script>
 </head>
-<body onload="initialize()">
-<h1>Lab 2 for Web GIS</h1>
-<h3>Name: Anaya Elias</h3>
-<!-- Comments-->
-<h3>Current Date is: </h3>
-<script type="text/javascript">
-document.write(Date());
-</script>
-<h3>Generate a random number: </h3>
-<script type="text/javascript">
-document.write(Math.random());
-</script>
-<h3>Define variables and perform calculation: </h3>
-<script type="text/javascript">
-var str1="Hello World"   ;
-document.write(str1);
-var x=5;
-document.write(x);
-document.write("<br> ");
-var y=10;
-var z=x+y;
-  document.write(z);
-document.write("<br> ");
-</script>
-<h3>Define a function </h3>
-<script type="text/javascript">
-function sum3(x1,x2,x3)
-{
-var sum=x1+x2+x3;
-return sum;
-}
-var k=sum3(5,6,7);
-document.write(k);
-</script>
-<div id="map_canvas" style="width:50%; height:50%"></div>
+
+<body>
+    <h1>Lab 2 for Web GIS</h1>
+    <h3>Name: Anaya Elias</h3>
+
+    <h3>Current Date is:</h3>
+    <p id="date"></p>
+
+    <h3>Generate a random number:</h3>
+    <p id="random"></p>
+
+    <h3>Define variables and perform calculation:</h3>
+    <p id="variables"></p>
+
+    <h3>Define a function:</h3>
+    <p id="result"></p>
+
+    <h2>UNCC</h2>
+    <div id="map1" class="map"></div>
+
+    <h2>Freedom Park</h2>
+    <div id="map2" class="map"></div>
+
+    <h2>Downtown Matthews</h2>
+    <div id="map3" class="map"></div>
+
+    <h2>Latta Nature Preserve</h2>
+    <div id="map4" class="map"></div>
+
+    <h2>Camp North End</h2>
+    <div id="map5" class="map"></div>
+
+    <script>
+        document.getElementById("date").textContent = new Date();
+        document.getElementById("random").textContent = Math.random();
+
+        const str1 = "Hello World";
+        const x = 5;
+        const y = 10;
+
+        document.getElementById("variables").innerHTML =
+            str1 + "<br>" +
+            "x = " + x + "<br>" +
+            "y = " + y + "<br>" +
+            "x + y = " + (x + y);
+
+        function sum3(x1, x2, x3) {
+            return x1 + x2 + x3;
+        }
+
+        document.getElementById("result").textContent = sum3(5, 6, 7);
+    </script>
 </body>
+</html>
