@@ -38,10 +38,17 @@
 <div id="map" class="map" style="width:100%; flex:1;"></div>
 
 <script>
-var latitude=35.306840;
-var longitude=-80.73200;
+// CHANGED: center and zoom now point at Washington State instead of Charlotte / the whole U.S.
+var latitude=47.4;
+var longitude=-120.7;
 var latlong=ol.proj.fromLonLat([longitude,latitude]);
-var zoomLevel=4;
+var zoomLevel=7;
+
+// NEW: bounding box of Washington State (west, south, east, north) in EPSG:3857
+var waExtent = ol.proj.transformExtent([-124.85, 45.54, -116.91, 49.00], 'EPSG:4326', 'EPSG:3857');
+// NEW: slightly larger box used to limit how far the user can pan away from Washington
+var waLimit = ol.proj.transformExtent([-127, 44, -115, 50.5], 'EPSG:4326', 'EPSG:3857');
+
   var basegroup = new ol.layer.Group({
 'title': 'Base Maps',
 layers: []
@@ -59,7 +66,8 @@ title: 'Google Map',
 type: 'base',
 visible: true,
 source: new ol.source.XYZ({
-url: `https://mt{0-3}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=MYAPIKEYHEREk&callback=initialize`
+url: `https://mt{0-3}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=AIzaSyB5U-lTv1hoJo_-
+ON8qVBXtEGXfZI80S7k&callback=initialize`
 })
 });
 basegroup.getLayers().push(googlemap);
@@ -120,7 +128,7 @@ style: polygonStyle
 
 overlaygroup.getLayers().push(geojsonLayer1);
 
-// ===== NEW: GeoJSON vector layer (real-time earthquakes) =====
+// ===== GeoJSON vector layer (real-time earthquakes) =====
 //Create a vector source for GeoJSON from a URL
 var geojsonSource2 = new ol.source.Vector({
 url: 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson',
@@ -142,15 +150,46 @@ width: 1
 
 overlaygroup.getLayers().push(geojsonLayer2);
 
+// ===== NEW: GeoJSON vector layer (Washington State counties, WSDOT) =====
+// ArcGIS feature service query that returns GeoJSON (outSR=4326 asks for lon/lat coordinates)
+var geojsonSource3 = new ol.source.Vector({
+url: 'https://services.arcgis.com/IYrj3otxNjPsrTRD/ArcGIS/rest/services/Travel_Center_Boundaries/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson',
+format: new ol.format.GeoJSON()
+});
+
+// Blue county outlines with a transparent fill
+var countyStyle = new ol.style.Style({
+fill: new ol.style.Fill({
+color: 'rgba(0, 0, 255, 0)'
+}),
+stroke: new ol.style.Stroke({
+color: '#0000FF',
+width: 2
+})
+});
+
+var geojsonLayer3 = new ol.layer.Vector({
+title: 'WA Counties',
+source: geojsonSource3,
+style: countyStyle
+});
+
+overlaygroup.getLayers().push(geojsonLayer3);
+
 // ===== Map (created after overlaygroup so it can include it) =====
 var map = new ol.Map({
 target: 'map',
 layers: [basegroup, overlaygroup],
 view: new ol.View({
 center: latlong,
-zoom: zoomLevel
+zoom: zoomLevel,
+extent: waLimit,   // NEW: keeps panning near Washington
+minZoom: 6         // NEW: prevents zooming out to the whole U.S.
 })
 });
+
+// NEW: fit the view tightly to Washington State's bounding box
+map.getView().fit(waExtent, {size: map.getSize(), padding: [10, 10, 10, 10]});
 
   var layerSwitcher = new ol.control.LayerSwitcher({
 tipLabel: 'Legend'
